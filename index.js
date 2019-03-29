@@ -1,5 +1,7 @@
 const express = require('express');
 const proxy = require('http-proxy-middleware');
+const https = require('https');
+const fs = require('fs');
 
 const target = process.env.REPORT_PORTAL_HOST;
 
@@ -32,4 +34,10 @@ const rpProxy = proxy(options);
 
 const app = express();
 app.use('/api/v1', rpProxy);
-app.listen(8080);
+
+https.createServer({
+    key: fs.readFileSync('server.key'),
+    cert: fs.readFileSync('server.cert')
+}, app).listen(8080, () => {
+    console.log('Listening port 8080');
+})
