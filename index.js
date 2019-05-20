@@ -2,6 +2,13 @@ const express = require('express');
 const proxy = require('http-proxy-middleware');
 
 const target = process.env.REPORT_PORTAL_HOST;
+const isDebugEnabled = process.env.NODE_ENV === 'development';
+
+const debug = (msg) => {
+    if (isDebugEnabled) {
+        console.log(msg);
+    }
+};
 
 const options = {
     target,
@@ -15,6 +22,8 @@ const options = {
                 proxyReq.setHeader('Content-Type', req.headers['content-type']);
             }
         }
+        debug('### Proxy request:');
+        debug(proxyReq);
     },
 
     onProxyRes: (proxyRes, req, res) => {
@@ -25,6 +34,8 @@ const options = {
         if (req.method === 'OPTIONS') {
             proxyRes.statusCode = 200;
         }
+        debug('### Proxy response:');
+        debug(proxyRes);
     },
 };
 
